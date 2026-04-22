@@ -1,26 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { MapContainer, TileLayer, useMapEvents, Marker } from 'react-leaflet';
+import { useState } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+function ClickHandler({ onClick }: any) {
+  useMapEvents({
+    //click(e) {
+    //  onClick(e.latlng);
+    //}
+  });
+  return null;
 }
 
-export default App;
+export default function App() {
+  const [points, setPoints] = useState<any[]>([]);
+
+  return (
+    <MapContainer >
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+
+      <ClickHandler
+        onClick={(latlng: any) => {
+          setPoints([...points, latlng]);
+        }}
+      />
+
+      {points.map((p, i) => (
+        <Marker key={i} position={p} />
+      ))}
+    </MapContainer>
+  );
+}
