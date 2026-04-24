@@ -1,4 +1,4 @@
-
+//version 0.0.2
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { useState } from 'react';
@@ -12,7 +12,7 @@ const createCustomIcon = (number: number) => {
       <span style="background: red; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-left: -10px;">${number}</span>
     </div>`,
     iconSize: [50, 50],
-    iconAnchor: [25, 50],
+    iconAnchor: [15, 26.2],
   });
 };
 
@@ -47,8 +47,17 @@ export default function App() {
       longitude: p.lng,
     }));
     const json = JSON.stringify(waypoints, null, 2);
+    alert("Json Pronto para download! clique em OK e escolha o local a ser baixado");
     console.log('JSON exportado:', json);
-    alert('JSON exportado no console!\n\n' + json);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'waypoints.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -59,22 +68,22 @@ export default function App() {
         style={{ height: "100vh", width: "100vw" }}
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"        />
 
         <ClickHandler
           onClick={(latlng: L.LatLng) => {
             setPoints([...points, latlng]);
-          }}
+            setShowCoords(true);}}
         />
 
         {points.map((p, i) => (
           <Marker key={i} position={p} icon={createCustomIcon(i + 1)}>
             <Popup>Waypoint {i + 1}</Popup>
+            <Popup>teste</Popup>
           </Marker>
         ))}
       </MapContainer>
-      <div style={{ position: "absolute", top: 10, left: 10, zIndex: 1000, background: "rgba(255,255,255,0.9)", padding: 10, borderRadius: 8 }}>
+      <div style={{ position: "absolute", top: 10, left: 100, zIndex: 1000, background: "rgba(255,255,255,0.9)", padding: 10, borderRadius: 8 }}>
         <button onClick={handleRemoveLast} style={{ marginRight: 8 }}>Remover última</button>
         <button onClick={handleRemoveAll} style={{ marginRight: 8 }}>Remover todas</button>
         <button onClick={handleExportJSON}>Exportar JSON</button>
